@@ -1,0 +1,8 @@
+# Ignore all files and directories
+*
+
+# Except for the .Scripts folder
+!.Scripts/
+
+# And files within the .Scripts folder
+!.Scripts/*
