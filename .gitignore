@@ -1,8 +1,5 @@
 # Ignore all files and directories
 *
 
-# Except for the .Scripts folder
-!.Scripts/
-
-# And files within the .Scripts folder
-!.Scripts/*
+# Except for the .gitignore file
+!.gitignore

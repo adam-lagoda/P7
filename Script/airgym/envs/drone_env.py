@@ -10,6 +10,7 @@ import cv2
 import os
 import sys
 import gym
+import csv
 from gym import spaces
 from airgym.envs.airsim_env import AirSimEnv
 
@@ -210,6 +211,8 @@ class AirSimDroneEnv(AirSimEnv):
         camera_pose = airsim.Pose(airsim.Vector3r(x_drone_pos, y_drone_pos, z_drone_pos), airsim.to_quaternion(0, 0, yaw_drone_frame))
         self.drone.simSetCameraPose("high_res", camera_pose)
         #self.drone.simSetCameraPose("0", camera_pose)
+        
+        self._log_position_state(x_drone_pos, y_drone_pos, z_drone_pos)
 
         #Parse the FPV view and operate on it to get the bounding box + camera view parameters
         responses = self.drone.simGetImages([
@@ -351,7 +354,7 @@ class AirSimDroneEnv(AirSimEnv):
             reward_obj_center = self.reward_center(self.x_obj_middle, self.cam_coords["width"], 400) + self.reward_center(self.y_obj_middle, self.cam_coords["height"], 400)
             reward1 += reward_obj_center
             
-            # REWARD 1
+            # REWARD 2
             reward_edge_center = self.reward_center(self.x_edge_middle, self.cam_coords["width"], 400) + self.reward_center(self.y_edge_middle, self.cam_coords["height"], 400)
             reward2 += reward_edge_center
             reward2 += self.line_maximization(self.edge_coords["edge_x1"], # how big is the line wrt to the camera view
@@ -416,3 +419,14 @@ class AirSimDroneEnv(AirSimEnv):
         return quad_offset, rotate
 
 
+    def _log_position_state(self, position_x: int, position_y: int, position_z: int):
+        """Save position of the drone into a CSV file
+
+        Args:
+            position_x (int): Position in X in world coordinates
+            position_y (int): Position in Y in world coordinates
+            position_z (int): Position in Z in world coordinates
+        """
+        with open("drone_position.csv", mode="a", newline="") as file:
+            writer = csv.writer(file)
+            writer.writerow([position_x, position_y, position_z])
